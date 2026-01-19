@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Pruebas de Razonamiento Lógico</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --border-radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            color: var(--secondary-color);
+            font-size: 1.2rem;
+            font-weight: normal;
+        }
+
+        .menu-section, .exam-section, .result-section {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            margin-bottom: 30px;
+            display: none;
+        }
+
+        .active-section {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .menu-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            border-top: 5px solid var(--secondary-color);
+        }
+
+        .menu-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-card i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--secondary-color);
+        }
+
+        .menu-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .menu-card p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .menu-card:nth-child(1) { border-top-color: #e74c3c; }
+        .menu-card:nth-child(1) i { color: #e74c3c; }
+        .menu-card:nth-child(2) { border-top-color: #2ecc71; }
+        .menu-card:nth-child(2) i { color: #2ecc71; }
+        .menu-card:nth-child(3) { border-top-color: #f39c12; }
+        .menu-card:nth-child(3) i { color: #f39c12; }
+        .menu-card:nth-child(4) { border-top-color: #9b59b6; }
+        .menu-card:nth-child(4) i { color: #9b59b6; }
+
+        .options-section {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .option-btn {
+            display: inline-block;
+            margin: 10px;
+            padding: 15px 30px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .option-btn:hover {
+            background-color: var(--primary-color);
+        }
+
+        .option-btn.with-help {
+            background-color: var(--success-color);
+        }
+
+        .option-btn.without-help {
+            background-color: var(--warning-color);
+        }
+
+        .back-btn {
+            background-color: #95a5a6;
+            margin-top: 20px;
+        }
+
+        .question-counter {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .question-counter span {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: var(--secondary-color);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .question-container {
+            margin-bottom: 30px;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            color: var(--primary-color);
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: var(--border-radius);
+        }
+
+        .options-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .option-button {
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            background-color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option-button:hover {
+            border-color: var(--secondary-color);
+            background-color: #f0f7ff;
+        }
+
+        .option-button.selected {
+            border-color: var(--secondary-color);
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .action-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn.primary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .action-btn.secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+
+        .action-btn:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .help-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            border-left: 5px solid var(--success-color);
+            display: none;
+        }
+
+        .help-section h4 {
+            color: var(--success-color);
+            margin-bottom: 10px;
+        }
+
+        .result-container {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background-color: #f5f5f5;
+            margin: 0 auto 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: var(--shadow);
+            border: 10px solid;
+        }
+
+        .score-percent {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .score-text {
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .result-details {
+            margin-top: 40px;
+            text-align: left;
+        }
+
+        .result-item {
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: var(--border-radius);
+            background-color: #f9f9f9;
+            border-left: 5px solid #ddd;
+        }
+
+        .result-item.correct {
+            border-left-color: var(--success-color);
+        }
+
+        .result-item.incorrect {
+            border-left-color: var(--danger-color);
+        }
+
+        .result-question {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .result-answer {
+            margin-bottom: 5px;
+        }
+
+        .result-explanation {
+            font-style: italic;
+            color: #666;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .final-buttons {
+            margin-top: 40px;
+        }
+
+        .question-input-section {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .question-input-section label {
+            display: block;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+
+        .question-input {
+            padding: 15px;
+            width: 200px;
+            border: 2px solid var(--secondary-color);
+            border-radius: var(--border-radius);
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .input-note {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .buttons-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .action-btn {
+                width: 100%;
+            }
+            
+            .question-counter {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .score-circle {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .score-percent {
+                font-size: 2.5rem;
+            }
+            
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sistema de Pruebas de Razonamiento Lógico</h1>
+            <p class="subtitle">Practica y mejora tus habilidades de razonamiento lógico</p>
+        </header>
+
+        <!-- Menú principal -->
+        <section id="menuSection" class="menu-section active-section">
+            <h2>Selecciona una categoría para practicar</h2>
+            <div class="menu-grid">
+                <div class="menu-card" id="patronesCard">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Identificación de Patrones</h3>
+                    <p>Practica la identificación de patrones en secuencias numéricas, figuras y series lógicas.</p>
+                </div>
+                <div class="menu-card" id="razonamientoCard">
+                    <i class="fas fa-brain"></i>
+                    <h3>Razonamiento Lógico Matemático</h3>
+                    <p>Desarrolla tu capacidad para resolver problemas mediante el razonamiento lógico matemático.</p>
+                </div>
+                <div class="menu-card" id="problemasCard">
+                    <i class="fas fa-calculator"></i>
+                    <h3>Resolución de Problemas Matemáticos</h3>
+                    <p>Mejora tus habilidades para resolver problemas matemáticos aplicando diferentes estrategias.</p>
+                </div>
+                <div class="menu-card" id="generalCard">
+                    <i class="fas fa-clipboard-list"></i>
+                    <h3>Examen General</h3>
+                    <p>Realiza un examen completo con preguntas de todas las categorías (30 preguntas aleatorias).</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Opciones de examen (con/sin ayuda) -->
+        <section id="optionsSection" class="menu-section">
+            <h2 id="optionsTitle"></h2>
+            <div class="options-section">
+                <button class="option-btn with-help" id="withHelpBtn">
+                    <i class="fas fa-hands-helping"></i> Examen con Ayuda
+                </button>
+                <button class="option-btn without-help" id="withoutHelpBtn">
+                    <i class="fas fa-user"></i> Examen sin Ayuda
+                </button>
+            </div>
+            <div style="text-align: center;">
+                <button class="option-btn back-btn" id="backToMenuBtn">
+                    <i class="fas fa-arrow-left"></i> Volver al Menú
+                </button>
+            </div>
+        </section>
+
+        <!-- Entrada de número de preguntas -->
+        <section id="questionInputSection" class="menu-section">
+            <div class="question-input-section">
+                <h2 id="questionInputTitle"></h2>
+                <label for="questionCount">¿Cuántas preguntas deseas practicar?</label>
+                <input type="number" id="questionCount" class="question-input" min="1" max="50" value="10">
+                <p class="input-note">Puedes elegir entre 1 y 50 preguntas (máximo disponible por categoría)</p>
+                <button class="option-btn" id="startExamBtn">
+                    <i class="fas fa-play-circle"></i> Comenzar Examen
+                </button>
+                <div style="margin-top: 20px;">
+                    <button class="option-btn back-btn" id="backToOptionsBtn">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección del examen -->
+        <section id="examSection" class="exam-section">
+            <div class="question-counter">
+                <div>
+                    <span id="currentQuestion">1</span> de <span id="totalQuestions">10</span>
+                    <div class="progress-bar">
+                        <div class="progress" id="progressBar"></div>
+                    </div>
+                </div>
+                <div>
+                    <span id="examCategory"></span>
+                </div>
+            </div>
+
+            <div class="question-container">
+                <div class="question-text" id="questionText">
+                    <!-- La pregunta se cargará aquí -->
+                </div>
+                
+                <div class="options-container" id="optionsContainer">
+                    <!-- Las opciones se cargarán aquí -->
+                </div>
+            </div>
+
+            <div class="buttons-container">
+                <button class="action-btn secondary" id="previousBtn" disabled>
+                    <i class="fas fa-chevron-left"></i> Anterior
+                </button>
+                <button class="action-btn primary" id="nextBtn">
+                    Siguiente <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <div class="help-section" id="helpSection">
+                <h4><i class="fas fa-info-circle"></i> Información de ayuda</h4>
+                <div id="helpContent">
+                    <!-- El contenido de ayuda se cargará aquí -->
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="action-btn secondary" id="finishExamBtn" style="display: none;">
+                    <i class="fas fa-flag-checkered"></i> Finalizar Examen
+                </button>
+            </div>
+        </section>
+
+        <!-- Sección de resultados -->
+        <section id="resultSection" class="result-section">
+            <div class="result-container">
+                <h2>Resultados del Examen</h2>
+                <div class="score-circle" id="scoreCircle">
+                    <div class="score-percent" id="scorePercent">0%</div>
+                    <div class="score-text" id="scoreText">Puntuación</div>
+                </div>
+                
+                <div class="result-details" id="resultDetails">
+                    <!-- Los detalles de los resultados se cargarán aquí -->
+                </div>
+                
+                <div class="final-buttons">
+                    <button class="option-btn" id="restartExamBtn">
+                        <i class="fas fa-redo"></i> Realizar otro examen
+                    </button>
+                    <button class="option-btn back-btn" id="backToMenuFromResultBtn">
+                        <i class="fas fa-home"></i> Volver al Menú Principal
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Variables globales
+        let currentCategory = null;
+        let currentExamType = null; // 'with-help' o 'without-help'
+        let questions = [];
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let examQuestions = [];
+        let totalQuestions = 0;
+        let showHelp = false;
+
+        // Datos de preguntas (con opciones agregadas)
+        const questionDatabase = {
+            // Categoría 1: Identificación de Patrones
+            1: [
+                {
+                    id: 1,
+                    question: "Observa la siguiente serie numérica: 2, 5, 9, 14, 20, ¿cuál es el número que sigue?",
+                    answer: "27",
+                    explanation: "Para hallar el patrón, calculamos las diferencias entre términos consecutivos: 5‑2 = 3, 9‑5 = 4, 14‑9 = 5, 20‑14 = 6. Las diferencias aumentan en una unidad cada paso (3, 4, 5, 6). Por lo tanto, la siguiente diferencia debe ser 7. Sumando 7 al último término de la serie (20) obtenemos 20 + 7 = 27.",
+                    options: ["26", "27", "28", "29"]
+                },
+                {
+                    id: 2,
+                    question: "En una fila de baldosas, cada una tiene el doble de puntos que la anterior. Si la primera baldosa tiene 3 puntos, ¿cuántos puntos tendrá la quinta baldosa?",
+                    answer: "48",
+                    explanation: "La secuencia sigue una regla de multiplicar por 2 en cada paso: 3, 6 (3×2), 12 (6×2), 24 (12×2), 48 (24×2). Por lo tanto, la quinta baldosa tendrá 48 puntos.",
+                    options: ["24", "36", "48", "64"]
+                },
+                {
+                    id: 3,
+                    question: "Observa la siguiente serie de números: 2, 4, 8, 16, __. ¿Cuál número completa correctamente la secuencia?",
+                    answer: "32",
+                    explanation: "Cada número de la serie se obtiene multiplicando el anterior por 2: 2×2=4, 4×2=8, 8×2=16. Por lo tanto, el siguiente término es 16×2=32.",
+                    options: ["24", "28", "32", "36"]
+                },
+                {
+                    id: 4,
+                    question: "Observa la siguiente sucesión numérica: 3, 6, 12, 24, __. ¿Cuál es el número que continúa la serie?",
+                    answer: "48",
+                    explanation: "Cada número de la sucesión se obtiene multiplicando el anterior por 2: 3 × 2 = 6, 6 × 2 = 12, 12 × 2 = 24. Siguiendo la misma regla, el siguiente término es 24 × 2 = 48.",
+                    options: ["36", "42", "48", "54"]
+                },
+                {
+                    id: 5,
+                    question: "La siguiente serie muestra la evolución de la población en una aldea: 2, 4, 8, 16, … ¿Cuál es el número que sigue en la secuencia?",
+                    answer: "32",
+                    explanation: "Cada número de la serie se obtiene multiplicando el anterior por 2 (doblando la cantidad). Partiendo de 2, al multiplicar por 2 obtenemos 4; 4 por 2 da 8; 8 por 2 da 16. Continuando el mismo patrón, 16 multiplicado por 2 resulta en 32.",
+                    options: ["24", "28", "32", "36"]
+                },
+                {
+                    id: 6,
+                    question: "Observa la siguiente serie de letras: A, C, F, J, O, … ¿Cuál es la letra que sigue en la secuencia?",
+                    answer: "U",
+                    explanation: "Para identificar el patrón, convierta cada letra a su posición en el alfabeto: A=1, C=3, F=6, J=10, O=15. Observe los incrementos entre valores consecutivos: 1→3 (+2), 3→6 (+3), 6→10 (+4), 10→15 (+5). Cada paso aumenta en una unidad respecto al anterior. El próximo incremento será +6, por lo que 15+6=21. La letra que ocupa la posición 21 del alfabeto es la 'U'.",
+                    options: ["T", "U", "V", "W"]
+                },
+                {
+                    id: 7,
+                    question: "En una campaña de entrega de caramelos, la cantidad que se reparten cada día se duplica respecto al día anterior: Día 1 → 3 caramelos, Día 2 → 6 caramelos, Día 3 → 12 caramelos, Día 4 → 24 caramelos. ¿Cuántos caramelos se repartirán el Día 5?",
+                    answer: "48",
+                    explanation: "La secuencia muestra que cada término es el doble del anterior (multiplicación por 2). Partiendo de 3, se obtiene 3 × 2 = 6, 6 × 2 = 12, 12 × 2 = 24. Aplicando la misma regla al último término: 24 × 2 = 48.",
+                    options: ["36", "42", "48", "56"]
+                },
+                {
+                    id: 8,
+                    question: "En una escuela se organizan filas de sillas para una presentación. La primera fila tiene 5 sillas, y cada fila sucesiva tiene 2 sillas más que la fila anterior. ¿Cuántas sillas habrá en la quinta fila?",
+                    answer: "13",
+                    explanation: "La cantidad de sillas forma una progresión aritmética donde el primer término a1 = 5 y la diferencia común d = 2. Para hallar el número de sillas en la quinta fila (a5) se usa la fórmula an = a1 + (n‑1)·d. Así, a5 = 5 + (5‑1)·2 = 5 + 8 = 13.",
+                    options: ["11", "12", "13", "14"]
+                },
+                {
+                    id: 9,
+                    question: "Observa la siguiente serie numérica: 2, 5, 8, 11, … ¿Cuál es el número que sigue en la secuencia?",
+                    answer: "14",
+                    explanation: "La serie aumenta en 3 unidades en cada paso: 2 + 3 = 5, 5 + 3 = 8, 8 + 3 = 11. Por lo tanto, el próximo término se obtiene sumando 3 al último número: 11 + 3 = 14.",
+                    options: ["13", "14", "15", "16"]
+                },
+                {
+                    id: 10,
+                    question: "Observe la siguiente serie de números: 2, 5, 10, 17, 26, __. ¿Cuál es el número que completa la secuencia?",
+                    answer: "37",
+                    explanation: "Cada término de la serie se obtiene al elevar al número de posición (comenzando en 1) al cuadrado y sumarle 1: 1²+1=2, 2²+1=5, 3²+1=10, 4²+1=17, 5²+1=26. Siguiendo la misma regla, el sexto término será 6²+1=36+1=37.",
+                    options: ["35", "36", "37", "38"]
+                }
+            ],
+            
+            // Categoría 2: Razonamiento Lógico Matemático
+            2: [
+                {
+                    id: 99,
+                    question: "En una escuela se van a empaquetar 48 lápices en paquetes iguales, sin que sobre ninguno. ¿Cuál es la mayor cantidad posible de lápices que puede contener cada paquete?",
+                    answer: "24",
+                    explanation: "Para que los 48 lápices se repartan en paquetes iguales sin que sobre ninguno, la cantidad de lápices por paquete debe ser un divisor de 48. Los divisores de 48 son 1, 2, 3, 4, 6, 8, 12, 16, 24 y 48. Como se busca la mayor cantidad posible pero menor que el total, el divisor máximo es 24.",
+                    options: ["12", "16", "24", "48"]
+                },
+                {
+                    id: 100,
+                    question: "Una maestra dispone 48 fichas para repartir entre 6 grupos, de forma que cada grupo reciba la misma cantidad de fichas y esa cantidad sea múltiplo de 4. ¿Cuántas fichas recibe cada grupo?",
+                    answer: "8",
+                    explanation: "Para que cada grupo reciba la misma cantidad de fichas, dividimos el total de fichas entre el número de grupos: 48 ÷ 6 = 8. Además, 8 es múltiplo de 4 (8 = 4 × 2), cumpliendo la condición adicional.",
+                    options: ["6", "8", "10", "12"]
+                },
+                {
+                    id: 101,
+                    question: "En una fila se colocan fichas de colores siguiendo el patrón: rojo, azul, verde, rojo, azul, verde, … ¿Cuál será el color de la ficha que ocupa el lugar número 20?",
+                    answer: "azul",
+                    explanation: "El patrón de colores se repite cada tres fichas: rojo → azul → verde. Para determinar el color de la posición 20, dividimos 20 entre 3. El cociente es 6 y el residuo es 2 (20 = 3·6 + 2). El residuo indica la posición dentro del ciclo: 1 corresponde a rojo, 2 a azul y 3 a verde. Como el residuo es 2, la ficha número 20 corresponde al segundo elemento del ciclo, es decir, al color azul.",
+                    options: ["rojo", "azul", "verde", "amarillo"]
+                },
+                {
+                    id: 102,
+                    question: "En una sucesión numérica el primer término es 5 y cada término siguiente se obtiene sumando 4 al anterior. ¿Cuál es el sexto término de la sucesión?",
+                    answer: "25",
+                    explanation: "Para obtener el n‑ésimo término de una sucesión aritmética se parte del primer término y se suma el incremento (diferencia) multiplicado por (n‑1). Aquí el primer término a1= 5 y la diferencia d = 4. El sexto término será a6 = a1+ (6‑1)·d = 5 + 5·4 = 5 + 20 = 25.",
+                    options: ["21", "23", "25", "27"]
+                },
+                {
+                    id: 103,
+                    question: "En una granja, el número de gallinas es el doble del número de conejos. Si el total de animales (gallinas y conejos) es 30, ¿cuántos conejos hay en la granja?",
+                    answer: "10",
+                    explanation: "Sea C el número de conejos. Entonces el número de gallinas es 2C. El total de animales es C + 2C = 3C, y se sabe que es 30. Por lo tanto, 3C = 30, de donde C = 30 / 3 = 10.",
+                    options: ["8", "10", "12", "15"]
+                },
+                {
+                    id: 104,
+                    question: "En un concurso de matemática, se deben formar equipos de tres estudiantes cuya suma total de puntuaciones sea al menos 20 puntos. Las puntuaciones de los seis participantes son: Ana 8, Luis 7, Carla 6, Pedro 5, Marta 4 y José 3. ¿Cuál de los siguientes grupos cumple la condición requerida?",
+                    answer: "Ana, Luis, Carla",
+                    explanation: "Para verificar cada alternativa se suma la puntuación de los tres estudiantes indicados. Sólo el grupo 'Ana + Luis + Carla' produce una suma de 8 + 7 + 6 = 21, que es mayor o igual a 20.",
+                    options: ["Ana, Pedro, José", "Ana, Luis, Carla", "Luis, Carla, Pedro", "Carla, Pedro, Marta"]
+                },
+                {
+                    id: 105,
+                    question: "Una biblioteca escolar cuenta con 84 libros idénticos que se organizarán en estanterías. Cada estantería debe contener el mismo número de libros, dicho número tiene que ser múltiplo de 3 y no puede superar los 12 libros por estantería. ¿Cuál es la menor cantidad posible de estanterías que se necesitan para alojar todos los libros?",
+                    answer: "7",
+                    explanation: "Para cumplir con la condición, se busca el mayor número de libros por estantería que sea múltiplo de 3 y ≤ 12, pues al maximizar los libros por estantería se minimiza la cantidad de estanterías. Los múltiplos de 3 menores o iguales a 12 son 3, 6 y 12. Dividiendo los 84 libros entre cada uno se obtiene: 84/3 = 28, 84/6 = 14 y 84/12 = 7. El menor número de estanterías corresponde a usar 12 libros por estantería, lo que da 84 ÷ 12 = 7 estanterías.",
+                    options: ["7", "12", "14", "28"]
+                },
+                {
+                    id: 106,
+                    question: "En una escuela se organizan equipos de debate. Cada equipo debe estar formado por exactamente 4 estudiantes y, para que el equipo sea competitivo, debe incluir al menos un estudiante cuyo nivel sea 3 o superior. La escuela cuenta con 12 estudiantes de nivel 1, 8 de nivel 2, 6 de nivel 3 y 4 de nivel 4. ¿Cuál es el número máximo de equipos que pueden formarse cumpliendo la condición requerida?",
+                    answer: "7",
+                    explanation: "Primero se determina cuántos equipos podrían formarse sin ninguna restricción: la escuela tiene en total 12+8+6+4 = 30 estudiantes, y cada equipo necesita 4 integrantes, por lo que el número máximo posible de equipos es ⌊30/4⌋ = 7 (ya que 7×4 = 28 y sobran 2 estudiantes). La condición adicional exige que cada equipo tenga al menos un estudiante de nivel 3 o 4. Hay 6 estudiantes de nivel 3 y 4 de nivel 4, es decir, 10 estudiantes que cumplen esa condición. Como se requieren 7 equipos, basta con disponer de al menos 7 estudiantes de nivel ≥3, lo cual es posible porque hay 10.",
+                    options: ["5", "6", "7", "8"]
+                },
+                {
+                    id: 107,
+                    question: "En la biblioteca de la escuela hay 48 libros que se deben colocar en filas con el mismo número de libros en cada fila, sin que sobre ninguno. ¿Cuál es la estrategia más adecuada para determinar cuántas filas se pueden formar?",
+                    answer: "Buscar divisores de 48",
+                    explanation: "Para que las filas tengan el mismo número de libros y no sobre ninguno, el número de filas debe ser un divisor de 48. La estrategia adecuada es probar divisores de 48 (por ejemplo, 1, 2, 3, 4, 6, 8, 12, 16, 24, 48) y verificar cuál produce un cociente entero.",
+                    options: ["Restar 1 repetidamente", "Multiplicar por 2", "Buscar divisores de 48", "Dividir entre 5"]
+                },
+                {
+                    id: 108,
+                    question: "En una escuela, la cantidad de estudiantes en las clases se incrementa siguiendo una estrategia constante: la clase 1 tiene 12 alumnos, la clase 2 tiene 15 alumnos, la clase 3 tiene 18 alumnos y la clase 4 tiene 21 alumnos. ¿Cuántos alumnos habrá en la clase 5 si se mantiene la misma estrategia?",
+                    answer: "24",
+                    explanation: "Observando los datos, la diferencia entre los números de alumnos de clases consecutivas es constante: 15‑12 = 3, 18‑15 = 3 y 21‑18 = 3. Esto indica que se está aplicando una estrategia de suma de 3 alumnos por cada nueva clase. Para obtener el número de alumnos de la clase 5, se suma 3 al valor de la clase 4: 21 + 3 = 24.",
+                    options: ["22", "23", "24", "25"]
+                }
+            ],
+            
+            // Categoría 3: Resolución de Problemas Matemáticos
+            3: [
+                {
+                    id: 199,
+                    question: "Una caja contiene lápices rojos y lápices azules. En total hay 18 lápices y el número de lápices rojos es el doble del número de lápices azules. ¿Cuántos lápices azules hay en la caja?",
+                    answer: "6",
+                    explanation: "Sea B la cantidad de lápices azules. Según el enunciado, la cantidad de lápices rojos es el doble, es decir, 2B. La suma total de lápices es 18, por lo que se plantea la ecuación: B + 2B = 18. Simplificando, 3B = 18, y al dividir ambos lados entre 3 se obtiene B = 6.",
+                    options: ["4", "6", "8", "12"]
+                },
+                {
+                    id: 200,
+                    question: "En una feria, cada puesto vende paquetes de 8 galletas. Si Miguel compra 5 paquetes y luego reparte las galletas igualmente entre sus 4 amigos, ¿cuántas galletas recibe cada amigo?",
+                    answer: "10",
+                    explanation: "Primero se calcula cuántas galletas compró Miguel: 5 paquetes × 8 galletas por paquete = 40 galletas. Luego, esas 40 galletas se dividen entre sus 4 amigos de forma equitativa: 40 ÷ 4 = 10 galletas por amigo.",
+                    options: ["8", "10", "12", "15"]
+                },
+                {
+                    id: 201,
+                    question: "Una escuela necesita comprar lápices para sus estudiantes. Cada paquete contiene 8 lápices y la escuela compra 12 paquetes. ¿Cuántos lápices tendrá en total?",
+                    answer: "96",
+                    explanation: "Para resolver el problema se debe descomponer la información: cada paquete tiene 8 lápices y se compran 12 paquetes. El número total de lápices se obtiene multiplicando la cantidad de paquetes por la cantidad de lápices por paquete (12 × 8). Al efectuar la multiplicación se obtiene 96.",
+                    options: ["80", "88", "96", "104"]
+                },
+                {
+                    id: 202,
+                    question: "En una feria de ciencias cada puesto vende 12 paquetes de boletos. Si al final del día se vendieron 144 boletos, ¿cuántos puestos participaron en la venta?",
+                    answer: "12",
+                    explanation: "Para determinar cuántos puestos vendieron boletos se debe dividir la cantidad total de boletos vendidos entre la cantidad que vende cada puesto. La operación es 144 ÷ 12 = 12.",
+                    options: ["10", "11", "12", "13"]
+                },
+                {
+                    id: 203,
+                    question: "En una granja hay gallinas y ovejas. En total hay 34 animales y 98 patas. ¿Cuántas ovejas hay en la granja?",
+                    answer: "15",
+                    explanation: "Sea g el número de gallinas y o el de ovejas. Se conoce que g + o = 34 (total de animales) y que 2g + 4o = 98 (total de patas, pues cada gallina tiene 2 y cada oveja 4). Dividiendo la segunda ecuación entre 2 se obtiene g + 2o = 49. Restando la ecuación de los animales (g + o = 34) de esta última, se elimina g y queda o = 49 - 34 = 15.",
+                    options: ["12", "13", "14", "15"]
+                },
+                {
+                    id: 204,
+                    question: "En una escuela se organizarán equipos de fútbol de 5 jugadores cada uno. Si 48 estudiantes desean participar, ¿cuál es el número máximo de equipos completos que se pueden formar?",
+                    answer: "9",
+                    explanation: "Para hallar cuántos equipos completos se pueden formar, se divide el número total de estudiantes entre el número de jugadores que requiere cada equipo: 48 ÷ 5 = 9 con resto 3. El cociente entero (9) indica la cantidad máxima de equipos que pueden completarse.",
+                    options: ["8", "9", "10", "11"]
+                },
+                {
+                    id: 205,
+                    question: "En la feria escolar se venden paquetes de cuadernos, cada paquete contiene 8 cuadernos y cuesta Bs 12. Si la escuela necesita exactamente 56 cuadernos para una actividad, ¿cuántos paquetes deberá adquirir?",
+                    answer: "7",
+                    explanation: "Para determinar cuántos paquetes comprar, se divide la cantidad total de cuadernos requeridos entre la cantidad que contiene cada paquete: 56 cuadernos ÷ 8 cuadernos/paquete = 7 paquetes.",
+                    options: ["6", "7", "8", "9"]
+                },
+                {
+                    id: 206,
+                    question: "Un agricultor recolectó 48 tomates y decide repartirlos en 6 cestas, colocando la misma cantidad de tomates en cada una. ¿Cuántos tomates deberá colocar en cada cesta?",
+                    answer: "8",
+                    explanation: "Para distribuir los 48 tomates en 6 cestas con la misma cantidad en cada una, se debe dividir el total de tomates entre el número de cestas: 48 ÷ 6 = 8.",
+                    options: ["6", "7", "8", "9"]
+                },
+                {
+                    id: 207,
+                    question: "En una papelería, Víctor compra cuadernos y lápices. Cada cuaderno tiene un precio de 3 bolivianos y cada lápiz cuesta 1 boliviano. Si gasta exactamente 21 bolivianos y compra el doble de cuadernos que de lápices, ¿cuántos cuadernos adquirió?",
+                    answer: "6",
+                    explanation: "Sea x la cantidad de lápices que Víctor compra. Como compra el doble de cuadernos, la cantidad de cuadernos es 2x. El costo total se expresa como: 3(2x) + 1x = 6x + x = 7x. Según el enunciado, 7x = 21 bolivianos. Despejando x, obtenemos x = 21/7 = 3 lápices. Por lo tanto, los cuadernos son 2x = 2*3 = 6 cuadernos.",
+                    options: ["4", "5", "6", "7"]
+                },
+                {
+                    id: 208,
+                    question: "En una clase de 30 estudiantes, cada alumno necesita 3 cuadernos para el semestre. La tienda donde se comprarán los cuadernos sólo vende paquetes de 5 cuadernos. ¿Cuántos paquetes de cuadernos debe comprar la escuela como mínimo para cubrir la necesidad de todos los estudiantes?",
+                    answer: "18",
+                    explanation: "Primero se determina cuántos cuadernos se necesitan en total: 30 estudiantes × 3 cuadernos = 90 cuadernos. Luego, considerando que los paquetes contienen 5 cuadernos cada uno, se divide la cantidad total entre el tamaño del paquete: 90 ÷ 5 = 18.",
+                    options: ["15", "16", "17", "18"]
+                }
+            ]
+        };
+
+        // Nombres de categorías
+        const categoryNames = {
+            1: "Identificación de Patrones",
+            2: "Razonamiento Lógico Matemático",
+            3: "Resolución de Problemas Matemáticos"
+        };
+
+        // Elementos del DOM
+        const menuSection = document.getElementById('menuSection');
+        const optionsSection = document.getElementById('optionsSection');
+        const questionInputSection = document.getElementById('questionInputSection');
+        const examSection = document.getElementById('examSection');
+        const resultSection = document.getElementById('resultSection');
+        
+        const optionsTitle = document.getElementById('optionsTitle');
+        const questionInputTitle = document.getElementById('questionInputTitle');
+        
+        const questionCountInput = document.getElementById('questionCount');
+        
+        const currentQuestionElement = document.getElementById('currentQuestion');
+        const totalQuestionsElement = document.getElementById('totalQuestions');
+        const progressBar = document.getElementById('progressBar');
+        const examCategoryElement = document.getElementById('examCategory');
+        const questionTextElement = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const helpSection = document.getElementById('helpSection');
+        const helpContent = document.getElementById('helpContent');
+        
+        const previousBtn = document.getElementById('previousBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const finishExamBtn = document.getElementById('finishExamBtn');
+        
+        const scoreCircle = document.getElementById('scoreCircle');
+        const scorePercent = document.getElementById('scorePercent');
+        const scoreText = document.getElementById('scoreText');
+        const resultDetails = document.getElementById('resultDetails');
+
+        // Event Listeners para las tarjetas del menú
+        document.getElementById('patronesCard').addEventListener('click', () => selectCategory(1));
+        document.getElementById('razonamientoCard').addEventListener('click', () => selectCategory(2));
+        document.getElementById('problemasCard').addEventListener('click', () => selectCategory(3));
+        document.getElementById('generalCard').addEventListener('click', () => selectCategory(4));
+
+        // Event Listeners para los botones de opciones
+        document.getElementById('withHelpBtn').addEventListener('click', () => selectExamType('with-help'));
+        document.getElementById('withoutHelpBtn').addEventListener('click', () => selectExamType('without-help'));
+        
+        // Event Listeners para botones de navegación
+        document.getElementById('backToMenuBtn').addEventListener('click', showMainMenu);
+        document.getElementById('backToOptionsBtn').addEventListener('click', showOptionsSection);
+        document.getElementById('startExamBtn').addEventListener('click', startExam);
+        document.getElementById('restartExamBtn').addEventListener('click', showMainMenu);
+        document.getElementById('backToMenuFromResultBtn').addEventListener('click', showMainMenu);
+        
+        // Event Listeners para botones del examen
+        previousBtn.addEventListener('click', showPreviousQuestion);
+        nextBtn.addEventListener('click', showNextQuestion);
+        finishExamBtn.addEventListener('click', finishExam);
+
+        // Función para seleccionar categoría
+        function selectCategory(category) {
+            currentCategory = category;
+            
+            if (category === 4) {
+                // Examen general - comienza inmediatamente
+                currentExamType = 'general';
+                startGeneralExam();
+            } else {
+                // Examen específico - mostrar opciones
+                showOptionsSection();
+            }
+        }
+
+        // Mostrar sección de opciones (con/sin ayuda)
+        function showOptionsSection() {
+            optionsTitle.textContent = `Selecciona el tipo de examen para: ${categoryNames[currentCategory]}`;
+            menuSection.classList.remove('active-section');
+            optionsSection.classList.add('active-section');
+            questionInputSection.classList.remove('active-section');
+            examSection.classList.remove('active-section');
+            resultSection.classList.remove('active-section');
+        }
+
+        // Función para seleccionar tipo de examen
+        function selectExamType(type) {
+            currentExamType = type;
+            showQuestionInputSection();
+        }
+
+        // Mostrar sección de entrada de número de preguntas
+        function showQuestionInputSection() {
+            const maxQuestions = questionDatabase[currentCategory].length;
+            questionInputTitle.textContent = `Examen de ${categoryNames[currentCategory]}`;
+            questionCountInput.max = maxQuestions;
+            questionCountInput.value = Math.min(10, maxQuestions);
+            
+            menuSection.classList.remove('active-section');
+            optionsSection.classList.remove('active-section');
+            questionInputSection.classList.add('active-section');
+            examSection.classList.remove('active-section');
+            resultSection.classList.remove('active-section');
+        }
+
+        // Mostrar menú principal
+        function showMainMenu() {
+            currentCategory = null;
+            currentExamType = null;
+            
+            menuSection.classList.add('active-section');
+            optionsSection.classList.remove('active-section');
+            questionInputSection.classList.remove('active-section');
+            examSection.classList.remove('active-section');
+            resultSection.classList.remove('active-section');
+        }
+
+        // Iniciar examen
+        function startExam() {
+            const requestedQuestions = parseInt(questionCountInput.value);
+            const maxQuestions = questionDatabase[currentCategory].length;
+            
+            if (isNaN(requestedQuestions) || requestedQuestions < 1 || requestedQuestions > maxQuestions) {
+                alert(`Por favor ingresa un número entre 1 y ${maxQuestions}`);
+                return;
+            }
+            
+            totalQuestions = requestedQuestions;
+            
+            // Obtener preguntas aleatorias sin repetición
+            const allQuestions = [...questionDatabase[currentCategory]];
+            examQuestions = [];
+            
+            for (let i = 0; i < totalQuestions; i++) {
+                if (allQuestions.length === 0) break;
+                
+                const randomIndex = Math.floor(Math.random() * allQuestions.length);
+                examQuestions.push(allQuestions[randomIndex]);
+                allQuestions.splice(randomIndex, 1);
+            }
+            
+            // Inicializar respuestas del usuario
+            userAnswers = new Array(examQuestions.length).fill('');
+            
+            // Configurar ayuda
+            showHelp = currentExamType === 'with-help';
+            
+            // Iniciar examen
+            currentQuestionIndex = 0;
+            showExamSection();
+            showQuestion();
+        }
+
+        // Iniciar examen general
+        function startGeneralExam() {
+            // Seleccionar 10 preguntas de cada categoría
+            examQuestions = [];
+            
+            for (let category = 1; category <= 3; category++) {
+                const allCategoryQuestions = [...questionDatabase[category]];
+                const selectedQuestions = [];
+                
+                for (let i = 0; i < 10; i++) {
+                    if (allCategoryQuestions.length === 0) break;
+                    
+                    const randomIndex = Math.floor(Math.random() * allCategoryQuestions.length);
+                    selectedQuestions.push(allCategoryQuestions[randomIndex]);
+                    allCategoryQuestions.splice(randomIndex, 1);
+                }
+                
+                examQuestions = examQuestions.concat(selectedQuestions);
+            }
+            
+            // Mezclar todas las preguntas
+            examQuestions = shuffleArray(examQuestions);
+            
+            totalQuestions = examQuestions.length;
+            userAnswers = new Array(totalQuestions).fill('');
+            
+            // Examen general no tiene ayuda
+            showHelp = false;
+            
+            // Iniciar examen
+            currentQuestionIndex = 0;
+            showExamSection();
+            showQuestion();
+        }
+
+        // Mostrar sección del examen
+        function showExamSection() {
+            const categoryName = currentCategory === 4 ? 
+                "Examen General (30 preguntas)" : 
+                `${categoryNames[currentCategory]} (${totalQuestions} preguntas)`;
+            
+            examCategoryElement.textContent = categoryName;
+            
+            menuSection.classList.remove('active-section');
+            optionsSection.classList.remove('active-section');
+            questionInputSection.classList.remove('active-section');
+            examSection.classList.add('active-section');
+            resultSection.classList.remove('active-section');
+            
+            // Mostrar u ocultar botón de finalizar
+            finishExamBtn.style.display = 'none';
+        }
+
+        // Mostrar pregunta actual
+        function showQuestion() {
+            const question = examQuestions[currentQuestionIndex];
+            
+            // Actualizar contador (mostramos índice base 1)
+            currentQuestionElement.textContent = currentQuestionIndex + 1;
+            totalQuestionsElement.textContent = totalQuestions;
+            
+            // Actualizar barra de progreso
+            const progressPercentage = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+            
+            // Mostrar pregunta
+            questionTextElement.textContent = question.question;
+            
+            // Mostrar opciones
+            displayOptions(question);
+            
+            // Configurar botones de navegación
+            previousBtn.disabled = currentQuestionIndex === 0;
+            
+            if (currentQuestionIndex === totalQuestions - 1) {
+                nextBtn.textContent = "Finalizar";
+                nextBtn.innerHTML = 'Finalizar <i class="fas fa-flag-checkered"></i>';
+                finishExamBtn.style.display = 'inline-block';
+            } else {
+                nextBtn.textContent = "Siguiente";
+                nextBtn.innerHTML = 'Siguiente <i class="fas fa-chevron-right"></i>';
+                finishExamBtn.style.display = 'none';
+            }
+            
+            // Mostrar ayuda si está activada
+            if (showHelp && userAnswers[currentQuestionIndex]) {
+                showHelpForQuestion();
+            } else {
+                helpSection.style.display = 'none';
+            }
+        }
+
+        // Mostrar opciones para la pregunta
+        function displayOptions(question) {
+            optionsContainer.innerHTML = '';
+            
+            // Mezclar las opciones para que no siempre esté la correcta en la misma posición
+            let options = [...question.options];
+            options = shuffleArray(options);
+            
+            options.forEach((option) => {
+                const button = document.createElement('button');
+                button.className = 'option-button';
+                button.textContent = option;
+                button.addEventListener('click', () => selectOption(option));
+                optionsContainer.appendChild(button);
+                
+                // Si ya hay una respuesta guardada, marcamos la opción seleccionada
+                if (userAnswers[currentQuestionIndex] === option) {
+                    button.classList.add('selected');
+                }
+            });
+        }
+
+        // Seleccionar una opción
+        function selectOption(selectedOption) {
+            // Quitar la selección de otros botones
+            document.querySelectorAll('.option-button').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Marcar este botón como seleccionado
+            event.target.classList.add('selected');
+            
+            // Guardar la respuesta
+            userAnswers[currentQuestionIndex] = selectedOption;
+            
+            // Si la ayuda está activada, mostrar retroalimentación inmediata
+            if (showHelp) {
+                showHelpForQuestion();
+            }
+        }
+
+        // Mostrar ayuda para la pregunta actual
+        function showHelpForQuestion() {
+            const question = examQuestions[currentQuestionIndex];
+            const userAnswer = userAnswers[currentQuestionIndex];
+            const correctAnswer = question.answer;
+            const isCorrect = userAnswer === correctAnswer;
+            
+            helpContent.innerHTML = `
+                <p><strong>Tu respuesta:</strong> ${userAnswer || '(Sin responder)'}</p>
+                <p><strong>Respuesta correcta:</strong> ${correctAnswer}</p>
+                <p><strong>Estado:</strong> ${isCorrect ? '<span style="color:green">✓ Correcta</span>' : '<span style="color:red">✗ Incorrecta</span>'}</p>
+                <p><strong>Sustento:</strong> ${question.explanation}</p>
+            `;
+            
+            helpSection.style.display = 'block';
+        }
+
+        // Mostrar pregunta anterior
+        function showPreviousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion();
+            }
+        }
+
+        // Mostrar siguiente pregunta
+        function showNextQuestion() {
+            if (currentQuestionIndex < totalQuestions - 1) {
+                currentQuestionIndex++;
+                showQuestion();
+            } else {
+                // Si estamos en la última pregunta, finalizar examen
+                finishExam();
+            }
+        }
+
+        // Finalizar examen y mostrar resultados
+        function finishExam() {
+            // Calcular puntaje
+            let correctCount = 0;
+            let resultHTML = '';
+            
+            for (let i = 0; i < totalQuestions; i++) {
+                const question = examQuestions[i];
+                const userAnswer = userAnswers[i];
+                const correctAnswer = question.answer;
+                const isCorrect = userAnswer === correctAnswer;
+                
+                if (isCorrect) {
+                    correctCount++;
+                }
+                
+                resultHTML += `
+                    <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
+                        <div class="result-question">Pregunta ${i + 1}: ${question.question}</div>
+                        <div class="result-answer"><strong>Tu respuesta:</strong> ${userAnswer || '(Sin responder)'}</div>
+                        <div class="result-answer"><strong>Respuesta correcta:</strong> ${correctAnswer}</div>
+                        <div class="result-explanation"><strong>Sustento:</strong> ${question.explanation}</div>
+                    </div>
+                `;
+            }
+            
+            const scorePercentage = Math.round((correctCount / totalQuestions) * 100);
+            
+            // Actualizar elementos de resultado
+            scorePercent.textContent = `${scorePercentage}%`;
+            scoreText.textContent = `${correctCount} de ${totalQuestions} correctas`;
+            
+            // Color del círculo según el puntaje
+            if (scorePercentage >= 80) {
+                scoreCircle.style.borderColor = '#2ecc71';
+            } else if (scorePercentage >= 60) {
+                scoreCircle.style.borderColor = '#f39c12';
+            } else {
+                scoreCircle.style.borderColor = '#e74c3c';
+            }
+            
+            // Mostrar detalles
+            resultDetails.innerHTML = resultHTML;
+            
+            // Mostrar sección de resultados
+            menuSection.classList.remove('active-section');
+            optionsSection.classList.remove('active-section');
+            questionInputSection.classList.remove('active-section');
+            examSection.classList.remove('active-section');
+            resultSection.classList.add('active-section');
+            
+            // Desplazarse al principio de la página
+            window.scrollTo(0, 0);
+        }
+
+        // Función para mezclar array (algoritmo de Fisher-Yates)
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // Inicializar la aplicación
+        function initApp() {
+            showMainMenu();
+        }
+
+        // Iniciar la aplicación cuando se cargue la página
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
